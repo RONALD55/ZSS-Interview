@@ -1,5 +1,6 @@
 package zw.co.zss.labtest.services.ifaces;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.data.domain.Page;
 import zw.co.zss.labtest.exceptions.BookNotFoundException;
 import zw.co.zss.labtest.models.Book;
@@ -16,5 +17,5 @@ public interface BookService {
     List<Book> findAll();
     Page<Book> searchPaginated(String keyword, int pageNumber, int pageSize, String field);
     Page<Book> findAllPaginateAndSort(int pageNumber,int pageSize,String field);
-    String purchaseBook(String id);
+    String purchaseBook(String id) throws JsonProcessingException;
 }

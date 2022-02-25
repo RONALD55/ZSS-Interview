@@ -1,5 +1,7 @@
 package zw.co.zss.labtest.services.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +20,9 @@ import zw.co.zss.labtest.repos.BookRepo;
 import zw.co.zss.labtest.repos.CategoryRepo;
 import zw.co.zss.labtest.services.ifaces.BookService;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,6 +36,7 @@ public class BookServiceImpl implements BookService {
     private final WebClient webClient;
     @Value("${zss.transactions.api}")
     private String url;
+
 
 
     @Override
@@ -98,14 +104,34 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public String purchaseBook(String id) {
+    public String purchaseBook(String id) throws JsonProcessingException {
 
         Book book = bookRepo.findById(id).orElseThrow(() -> new BookNotFoundException("Book not found"));
-        String data= "{\\n   \\\"type\\\": \\\"PURCHASE\\\",\\n   \\\"extendedType\\\": \\\"NONE\\\",\\n   \\\"amount\\\":"+ book.getPrice().toString()+",\\n   \\\"created\\\": \\\"2022-02-14T11:28:39.4+02:00\\\",\\n   \\\"card\\\": {\\n      \\\"id\\\": \\\"1234560000000001\\\",\\n      \\\"expiry\\\": \\\"2020-01-01\\\"\\n   },\\n   \\\"reference\\\": \\\"33d0893a-4c0e-49cf-a373-7e67a64ce036\\\",\\n   \\\"narration\\\": \\\"Test Narration\\\",\\n   \\\"additionalData\\\": {\\n      \\\"SampleKey\\\": \\\"This is a sample value\\\"\\n   }\\n}";
+        LocalDateTime currentTime = LocalDateTime.now();
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+
+        String data= "{\n" +
+                "  \"type\" : \"PURCHASE\",\n" +
+                "  \"extendedType\" : \"NONE\",\n" +
+                "  \"amount\" : "+book.getPrice().toString()+",\n" +
+                "  \"created\" : \""+ dateTimeFormatter.format(currentTime)+"\",\n" +
+                "  \"card\" : {\n" +
+                "    \"id\" : \"1234560000000001\",\n" +
+                "    \"expiry\" : \"2020-01-01\"\n" +
+                "  },\n" +
+                "  \"reference\" : \"33d0893a-4c0e-49cf-a373-7e67a64ce036\",\n" +
+                "  \"narration\" : \"Test Narration\",\n" +
+                "  \"additionalData\" : {\n" +
+                "    \"SampleKey\" : \"This is a sample value\"\n" +
+                "  }\n" +
+                "}";
+        log.info("data to API {}",data);
+
         return webClient.post()
                 .uri(url)
-                .accept(MediaType.APPLICATION_JSON).header("Authorization", "Bearer c5cf4d73-34a3-4aec-a6ea-e6483d3a27c6")
-                .body(Mono.just(data),String.class)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer 9ca3d5ed-dc04-4700-8dd6-7d60c3cdf0fa")
+                .bodyValue(data)
                 .retrieve()
                 .bodyToMono(String.class)
                 .block();

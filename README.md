@@ -42,16 +42,9 @@ Send a get request to the url :  http://localhost:8080/zss/api/v1.0/books/{categ
 
 
 ### Purchasing a book 
-I have added the logic but l couldn't test since the [ZSS TEST TRANSACTION API](https://lab.v.co.zw/interview) was down. It was showing the error message below
+To purchase a book send a post request on url : http://localhost:8080/zss/api/v1.0/books/purchase/{bookId}
 ```postman
-{
-    "timestamp": "2022-02-24T19:44:57.536+00:00",
-    "status": 404,
-    "error": "Not Found",
-    "message": "",
-    "path": "/"
-}
-
+The body can be empty
 ```
 
 ### Other Endpoints

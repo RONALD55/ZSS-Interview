@@ -1,6 +1,7 @@
 package zw.co.zss.labtest.api;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
@@ -67,7 +68,7 @@ public class BookController {
 
     @PostMapping("purchase/{id}")
     @ResponseBody
-    public String purchaseBook(@PathVariable("id")  String id) {
+    public String purchaseBook(@PathVariable("id")  String id) throws JsonProcessingException {
         return bookService.purchaseBook(id);
     }
 
